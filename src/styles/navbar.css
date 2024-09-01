@@ -1,0 +1,17 @@
+.navbar {
+    background-color: #2A2F7A;
+}
+
+.navbartext {
+    color: #FFFFFF;
+}
+
+.welcometext {
+    font-size: 1rem;
+}
+
+.navicon {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
