@@ -1,0 +1,46 @@
+.signincard {
+    background-color: rgba(42, 46, 122, 0.5) !important;    padding: 1rem;
+    color: #FFFFFF !important;
+    border-radius: 20px !important;
+}
+
+.signincard > *:not(:nth-child(2)):not(:nth-child(3)) {
+    opacity: 0.5 !important;
+}
+
+.signincard > *:nth-child(2):not(:nth-child(3)) {
+    opacity: 1 !important;
+}
+
+.signinformcol h1, .signinformcol h4 {
+    color: #FFFFFF;
+}
+
+.signincontainer {
+    background: linear-gradient(to right, #1B898A, #2A2E7A); /* Example colors */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.signinbannerimage{
+    max-height: 600px;
+   width: 100%;
+    object-fit: contain;
+    border-radius: 20px;
+}
+
+.signinformcol {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.forgotpassbtn {
+    color: #444444 !important;
+    background-color: #FFFFFF !important;
+    border-radius: 20px !important;
+    padding: 0.5rem 3rem !important;
+}
