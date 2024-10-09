@@ -1,0 +1,13 @@
+.superadmincontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   height: 100vh;
+}
+
+.superadmincard {
+    height: 80%;
+    width: 60%;
+    min-width: 400px;;
+    background: rgba(255, 255, 255, 0.8);
+}

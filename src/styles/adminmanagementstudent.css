@@ -1,0 +1,49 @@
+.cpoint {
+    cursor: pointer;
+}
+
+.custom-file-button input[type=file] {
+    margin-left: -2px !important;
+  }
+  
+  .custom-file-button input[type=file]::-webkit-file-upload-button {
+    display: none;
+  }
+  
+  .custom-file-button input[type=file]::file-selector-button {
+    display: none;
+  }
+  
+  .custom-file-button:hover label {
+    background-color: #dde0e3;
+    cursor: pointer;
+  }
+
+table {
+  margin-top: 20px;
+  }
+
+table thead th{
+  background-color: #F9FAFC !important;
+  border-top: solid 1px #E5E7EB !important;
+  border-bottom: solid 1px #E5E7EB !important;
+}
+
+table td, table tr, table tbody {
+  border: none; /* Remove borders from table cells, rows, and body */
+}
+
+table tr:not(thead tr) {
+  height: 80px !important;
+  max-height: 80px !important;
+}
+
+table tbody tr:nth-child(even):hover td{
+  cursor: pointer;
+  background-color: #F9FAFC;
+}
+
+table tbody tr:nth-child(odd):hover td {
+  cursor: pointer;
+  background-color: var(--primary04) !important;
+} 

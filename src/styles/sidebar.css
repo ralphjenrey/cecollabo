@@ -1,19 +1,11 @@
 .sidebar {
-    z-index: 1;
+    z-index: 999;
     width: 250px;
     max-width: 250px;
     position: absolute;
-    height: inherit;
+    height: 100%;
     background-color: #2A2F7A;
     transition: transform 0.3s ease-in-out;
-}
-
-.sidebarnav {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-    height: 100%;
 }
 
 .sidebarnavlink {
@@ -21,13 +13,7 @@
     color: #FFFFFF;
     display: flex;
     align-items: center;
-justify-content: start !important;
-    padding-right: 3rem;
     margin-bottom: 1rem;
-}
-
-.navicon {
-    margin-right: 1rem;
 }
 
 .sidebarnavlink.active {
@@ -54,3 +40,8 @@ justify-content: start !important;
   .sidebar.open {
     transform: translateX(0);
   }
+
+.navicon {
+    margin-left: -30px;
+    padding: 0;
+}
