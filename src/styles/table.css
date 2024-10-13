@@ -1,0 +1,45 @@
+
+table {
+    transition: all 0.3s ease-in-out;
+
+    margin-top: 20px;
+    }
+  
+  table thead th{
+    background-color: #F9FAFC !important;
+    border-top: solid 1px #E5E7EB !important;
+    border-bottom: solid 1px #E5E7EB !important;
+  }
+  
+  table td, table tr, table tbody {
+    border: none; /* Remove borders from table cells, rows, and body */
+  }
+  
+  table tr:not(thead tr) {
+    height: 80px !important;
+    max-height: 80px !important;
+  }
+  
+  table tbody tr:nth-child(even):hover td{
+    cursor: pointer;
+    background-color: #F9FAFC;
+  }
+  
+  table tbody tr:nth-child(odd):hover td {
+    cursor: pointer;
+    background-color: var(--primary04) !important;
+  } 
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .sort-icon {
+    animation: rotate 0.5s ease-in-out;
+    animation-iteration-count: 1;
+  }

@@ -96,7 +96,6 @@ const SuperadminAddAdminPage = () => {
                 label="Name"
                 type="text"
                 placeholder="Enter admin name"
-                className="py-3"
                 style={{ maxWidth: "400px" }}
                 value={adminName}
                 onChange={handleAdminNameChange}
@@ -126,7 +125,6 @@ const SuperadminAddAdminPage = () => {
             type="email"
             placeholder="Enter admin email"
             value={adminEmail}
-            className="py-3"
             style={{ maxWidth: "400px" }}
             onChange={handleAdminEmailChange}
           />
@@ -135,7 +133,6 @@ const SuperadminAddAdminPage = () => {
             label="Password"
             type="password"
             placeholder="Enter admin password"
-            className="py-3"
             style={{ maxWidth: "400px" }}
             value={adminPassword}
             onChange={handleAdminPasswordChange}

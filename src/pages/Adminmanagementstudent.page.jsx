@@ -10,11 +10,10 @@ import {
 } from "@mui/material"; // Add Table import
 import { useEffect, useState } from "react";
 import CustomInput from "../components/CustomInput.component";
-import { Accordion, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { Accordion, Col, Container, Form, Row } from "react-bootstrap";
 import CustomCard from "../components/CustomCard";
 import { enqueueSnackbar } from "notistack";
 import { COURSE_OPTIONS } from "../constants/course";
-import { ArrowDownward, ArrowUpward, Edit } from "@mui/icons-material";
 import EditModal from "../components/EditModal";
 import "../styles/adminmanagementstudent.css";
 import { YEARS } from "../constants/year";
@@ -149,32 +148,36 @@ const AdminManagementStudent = () => {
   }, 300);
 
   const fetchUser = async () => {
+    console.log("fetching students");
+
     const students = await fetchUsers();
     setStudents(students);
   };
 
   const tableHeaders = [
-    "First Name",
-    "Last Name",
-    "Middle Name",
-    "Year Level",
-    "Picture",
-    "Email",
-    "Department",
+    { key: "firstName", value: "First Name" },
+    { key: "lastName", value: "Last Name" },
+    { key: "middleName", value: "Middle Name" },
+    { key: "yearLevel", value: "Year Level" },
+    { key: "picture", value: "Picture" },
+    { key: "email", value: "Email" },
+    { key: "department", value: "Department" },
   ];
   
-  const excludeSortingHeaders = ["Picture"];
+  
+  const excludeSortingHeaders = [{ key: "picture", value: "Picture" }];
 
   const tableActions = [
     {
       label: "Edit",
+      variant: "warning",
       handler: handleModalShow,
     },
   ];
 
   useEffect(() => {
     fetchUser();
-  });
+  }, []);
 
   useEffect(() => {
     setFilteredStudents(

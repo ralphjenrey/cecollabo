@@ -21,6 +21,7 @@ import {
   get,
 } from "firebase/database";
 import { database } from "../services/firebase";
+import ReusableTable from "../components/Table.component";
 const AnnouncementPage = () => {
   const [selectedAudience, setSelectedAudience] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,6 +112,30 @@ const AnnouncementPage = () => {
     setFilteredAnnouncements(filterAnnouncements);
   };
 
+  const tableActions = [
+    { 
+      label: "Edit",
+      variant: "warning",
+      handler: () => {},
+    },
+    { 
+      label: "Delete",
+      variant: "danger",
+      handler: () => {},
+    },
+  ];
+  
+  const tableHeaders = [
+    { key: "title", value: "Title" },
+    { key: "text", value: "Text" },
+    { key: "createdAt", value: "Created At" },
+    { key: "audience", value: "Audience" },
+    { key: "image", value: "Image" },
+  ];
+  
+  
+  const excludeSortingHeaders = [{ key: "image", value: "Picture" }];
+
   return (
     <Container fluid className="p-4">
       <Card>
@@ -178,53 +203,20 @@ const AnnouncementPage = () => {
             </div>
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Text</th>
-                    <th>Created At</th>
-                    <th>Audience</th>
-                    <th className="text-center">File</th>
-                    <th className="text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAnnouncements.map((announcement) => (
-                    <tr key={announcement.id}>
-                      <td>{announcement.title}</td>
-                      <td>{announcement.text}</td>
-                      <td>{announcement.createdAt}</td>
-                      <td>{announcement.audience}</td>
-                      <td className="text-center">
-                        {announcement.image ? (
-                          <a
-                            href={announcement.image}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View
-                          </a>
-                        ) : (
-                          "No File"
-                        )}
-                      </td>
-                      <td className="text-center">
-                        <Edit
-                          color="success"
-                          className="cpoint mx-2"
-                          // onClick={() => handleModalShow(announcement)}
-                        />
-                        <DeleteOutline
-                          color="primary"
-                          className="ml-2 cpoint"
-                          // onClick={() => handleDeleteModalShow(announcement)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <ReusableTable 
+                headers={tableHeaders}
+                data={filteredAnnouncements.map((announcement) => ({
+                  id: announcement.id,
+                  title: announcement.title,
+                  text: announcement.text,
+                  createdAt: announcement.createdAt,
+                  audience: announcement.audience,
+                  image: <img src={announcement.image} width={50} height={50} alt="announcement" />,
+                }))}
+                actions={tableActions}
+                excludeSortingHeaders={excludeSortingHeaders}
+              />
+          
             </div>
           )}
         </Card.Body>
