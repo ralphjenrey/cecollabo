@@ -1,0 +1,14 @@
+/* chatbot.css */
+.chatbot-container {
+    padding: 20px;
+  }
+  
+  .file-tree-container {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+.chatbot-buttons {
+  min-width: 0 !important
+}

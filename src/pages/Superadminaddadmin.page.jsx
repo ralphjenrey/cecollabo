@@ -8,7 +8,7 @@ import { database, superAdminAuth } from "../services/firebase";
 import { getFirebaseErrorMessage } from "../utils/firebase.exceptions";
 import { enqueueSnackbar } from "notistack";
 import { ref, set } from "firebase/database";
-import { COURSE_OPTIONS } from "../constants/course";
+import { COURSE_OPTIONS, SUPER_ADMIN_COURSE_OPTIONS } from "../constants/course";
 
 const SuperadminAddAdminPage = () => {
   const [adminName, setAdminName] = useState("");
@@ -33,7 +33,17 @@ const SuperadminAddAdminPage = () => {
   };
 
   const handleSubmit = async (e) => {
+  
     e.preventDefault();
+    if (!adminName || !adminEmail || !adminPassword || !adminDepartment) {
+      enqueueSnackbar("Please fill all fields", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return;
+    }
+
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(
         superAdminAuth,
@@ -45,7 +55,7 @@ const SuperadminAddAdminPage = () => {
         name: adminName,
         email: adminEmail,
         department: adminDepartment,
-        acc_type: "admin",
+        role: "admin",
       });
       await superAdminAuth.signOut();
       setAdminEmail("");
@@ -86,7 +96,6 @@ const SuperadminAddAdminPage = () => {
       <CustomCard
         style={{ width: "90%" }}
         header={<h3>Add New Admin</h3>}
-        footer={<p>Footer content here</p>}
       >
         <Form onSubmit={handleSubmit}>
           <Row>
@@ -111,7 +120,7 @@ const SuperadminAddAdminPage = () => {
                 style={{ maxWidth: "400px" }}
               >
                 <option>Select Department/Organization</option>
-                {Object.keys(COURSE_OPTIONS).map((key) => (
+                {Object.keys(SUPER_ADMIN_COURSE_OPTIONS).map((key) => (
                   <option key={key} value={key}>
                     {COURSE_OPTIONS[key]}
                   </option>

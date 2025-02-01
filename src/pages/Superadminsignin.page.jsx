@@ -4,16 +4,18 @@ import backgroundImage from "../assets/superadmin.jpg";
 import "../styles/superadminsignin.css";
 import CustomInput from "../components/CustomInput.component";
 import CustomButton from "../components/CustomButton";
-import { get, ref } from "firebase/database";
+import { get, ref, update } from "firebase/database";
 import { database } from "../services/firebase";
 import { useDispatch } from "react-redux";
-import { setUser } from "../store/authSlice";
+import { login } from "../store/authSlice";
 import {getFirebaseErrorMessage} from "../utils/firebase.exceptions";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid';
 
 const SuperAdminSignInPage = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -33,20 +35,25 @@ const SuperAdminSignInPage = () => {
         const signInResult = user.child('password').val() === password;
         if (signInResult) {
           const userData = {
-            acc_type: user.child('acc_type').val(),
+            role: user.child('role').val(),
             name: user.key,
           };
+          const token = uuidv4();
+          await update(userRef, { token: token });
+          userData.token = token;
           localStorage.setItem('user', JSON.stringify(userData));
-          dispatch(setUser({ role: userData.acc_type, name: userData.name }));
+          dispatch(login({ role: userData.role, name: userData.name, token: userData.token }));
           // Redirect to the dashboard
           navigate("/superadmin/dashboard");
         } else {
           console.error("Error: Incorrect password.");
+          setError("Incorrect password.");
           // Optionally, set an error state to display an error message to the user
           // setError("Incorrect password.");
         }
       } else {
         console.error("Error: User does not exist.");
+        setError("User does not exist.");
         // Optionally, set an error state to display an error message to the user
         // setError("User does not exist.");
       }
@@ -54,10 +61,12 @@ const SuperAdminSignInPage = () => {
       if (Object.prototype.hasOwnProperty.call(error, "code")) {
         const errorMessage = getFirebaseErrorMessage(error.code);
         console.error("Firebase error:", errorMessage);
+        setError(errorMessage);
         // Optionally, set an error state to display an error message to the user
         // setError(errorMessage);
       } else {
-        console.error("An error occurred. Please try again.");
+        console.error("An error occurred. Please try again.", error);
+        setError("An error occurred. Please try again.");
         // Optionally, set an error state to display an error message to the user
         // setError("An error occurred. Please try again.");
       }
@@ -87,19 +96,18 @@ const SuperAdminSignInPage = () => {
           <br></br>
           <Form onSubmit={handleSubmit}>
             <CustomInput
-              className={"py-3"}
               placeholder={"Username"}
               type="text"
               value={username}
               onChange={handleUsernameChange}
             />
             <CustomInput
-              className={"py-3"}
               placeholder={"Password"}
               type="password"
               value={password}
               onChange={handlePasswordChange}
             />
+            {error && <p className="text-danger">{error}</p>}
             <CustomButton type="submit" onClick={handleSubmit} className="w-100 mb-4 py-3">
               LOG IN
             </CustomButton>

@@ -1,25 +1,33 @@
-import { ref, set, update, get } from 'firebase/database';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { enqueueSnackbar } from 'notistack';
-import { YEARS } from '../constants/year';
-import { COURSE_OPTIONS } from '../constants/course';
-import { getFirebaseErrorMessage } from '../utils/firebase.exceptions';
-import { database, storage, superAdminAuth } from '../services/firebase';
+import { ref, set, update, get, remove } from "firebase/database";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { enqueueSnackbar } from "notistack";
+import { YEARS } from "../constants/year";
+import { COURSE_OPTIONS } from "../constants/course";
+import { getFirebaseErrorMessage } from "../utils/firebase.exceptions";
+import { auth, database, storage, superAdminAuth } from "../services/firebase";
 
 export const StudentHandleSubmit = async (e, newStudent) => {
   const emptyFields = [];
+  const userId = auth.currentUser.uid;
+  const userRef = ref(database, `Users/${userId}`);
+  const department = (await get(userRef)).child("department").val();
+  newStudent.department = department;
   const defaultYearLevel = YEARS[0];
-  const defaultDepartment = Object.keys(COURSE_OPTIONS)[0];
+  // const defaultDepartment = Object.keys(COURSE_OPTIONS)[0];
   newStudent.yearLevel =
     newStudent.yearLevel === "" || newStudent.yearLevel === undefined
       ? defaultYearLevel
       : newStudent.yearLevel;
-  newStudent.department =
-    newStudent.department === "" || newStudent.department === undefined
-      ? defaultDepartment
-      : newStudent.department;
-  console.log(newStudent, defaultDepartment, defaultYearLevel);
+  // newStudent.department =
+  //   newStudent.department === "" || newStudent.department === undefined
+  //     ? defaultDepartment
+  //     : newStudent.department;
+  // console.log(newStudent, defaultDepartment, defaultYearLevel);
 
   // Check each field and add its name to the array if it is empty
   if (!newStudent.firstName) emptyFields.push("First Name");
@@ -49,10 +57,7 @@ export const StudentHandleSubmit = async (e, newStudent) => {
     );
     const user = userCredential.user;
 
-    const userStorageRef = storageRef(
-      storage,
-      `Users/${user.uid}/profile.jpg`
-    );
+    const userStorageRef = storageRef(storage, `Users/${user.uid}/profile.jpg`);
     const metadata = {
       contentType: "image/jpeg",
     };
@@ -60,6 +65,14 @@ export const StudentHandleSubmit = async (e, newStudent) => {
     await uploadBytes(userStorageRef, newStudent.picture, metadata);
 
     const downloadURL = await getDownloadURL(userStorageRef);
+    const { firstName, lastName } = newStudent;
+
+    //remove any double spaces
+    const newFirstName = firstName.trim().replace(/\s+/g, " ");
+    const newLastName = lastName.trim().replace(/\s+/g, " ");
+
+    newStudent.firstName = newFirstName;
+    newStudent.lastName = newLastName;
 
     const newStudentData = {
       id: user.uid,
@@ -67,7 +80,7 @@ export const StudentHandleSubmit = async (e, newStudent) => {
       picture: downloadURL,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      acc_type: "student",
+      role: "student",
     };
 
     await set(ref(database, `Users/${user.uid}`), newStudentData);
@@ -78,7 +91,6 @@ export const StudentHandleSubmit = async (e, newStudent) => {
     });
 
     return newStudentData;
-    
   } catch (error) {
     handleError(error);
   }
@@ -86,6 +98,7 @@ export const StudentHandleSubmit = async (e, newStudent) => {
 
 export const StudenHandleUpdate = async (editStudent, handleModalClose) => {
   try {
+   
     if (editStudent) {
       // Replace undefined properties with empty strings
       Object.keys(editStudent).forEach((key) => {
@@ -105,9 +118,39 @@ export const StudenHandleUpdate = async (editStudent, handleModalClose) => {
         await uploadBytes(userStorageRef, editStudent.picture, metadata);
         const downloadURL = await getDownloadURL(userStorageRef);
         editStudent.picture = downloadURL;
-      }else {
+      } else {
         delete editStudent.picture;
       }
+
+      const user = auth.currentUser;
+      const currentEmail = user.email;
+      const { firstName, lastName, email } = editStudent;
+      //remove any double spaces
+      const newFirstName = firstName.trim().replace(/\s+/g, " ");
+      const newLastName = lastName.trim().replace(/\s+/g, " ");
+      
+      editStudent.firstName = newFirstName;
+      editStudent.lastName = newLastName;
+
+
+    //   if (currentEmail !== email && editStudent.id) {
+    //     const snapshot = await get(ref(database, `Users/${editStudent.id}`));
+    //     const userData = snapshot.val();
+    //     if (userData) {
+    //         const newUser = await createUserWithEmailAndPassword(auth, email, "123456");
+    //         userData.email = email; // Update the email in the userData object
+    //         await set(ref(database, `Users/${newUser.user.uid}`), userData);
+    //         await remove(ref(database, `Users/${editStudent.id}`)); // Delete the old data
+    //         enqueueSnackbar("Student account updated successfully", {
+    //             variant: "success",
+    //             anchorOrigin: { vertical: "top", horizontal: "center" },
+    //         });
+    //         handleModalClose();
+    //         return updatedStudent;
+    //     } else {
+    //         console.error("User data is undefined or null");
+    //     }
+    // }
 
       const updatedStudent = {
         ...editStudent,
@@ -144,13 +187,25 @@ const handleError = (error) => {
 };
 
 export const fetchUsers = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    return null;
+  } 
+  const currentUserRef = ref(database, `Users/${user.uid}`);
+  const currentUserSnapshot = await get(currentUserRef);
+  const currentUserData = currentUserSnapshot.val();
+  const department = currentUserData.department;
+  
   const userRef = ref(database, "Users");
   const snapshot = await get(userRef);
   const userData = snapshot.val();
 
+  //Filter students by department
+
+
   if (userData) {
     const students = Object.values(userData).filter(
-      (user) => user.acc_type === "student"
+      (user) => user.role === "student" && user.department === department
     );
     return students;
   }

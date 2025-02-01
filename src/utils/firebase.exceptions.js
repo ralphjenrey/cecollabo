@@ -55,6 +55,7 @@ const firebaseErrorMessages = {
     "auth/unauthorized-continue-uri": "The domain of the continue URL is not whitelisted.",
     "auth/user-not-found": "No user record corresponding to this identifier. The user may have been deleted.",
     "auth/email-already-in-use": "The email address is already in use by another account.",
+    "auth/weak-password": "The password must be 6 characters long or more.",
   };
   
   export const getFirebaseErrorMessage = (errorCode) => {

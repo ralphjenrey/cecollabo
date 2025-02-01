@@ -16,51 +16,47 @@ import { enqueueSnackbar } from "notistack";
 import { COURSE_OPTIONS } from "../constants/course";
 import EditModal from "../components/EditModal";
 import "../styles/adminmanagementstudent.css";
-import { YEARS } from "../constants/year";
+import ReusableTable from "../components/Table.component";
 import {
   fetchUsers,
-  StudenHandleUpdate,
-  StudentHandleSubmit,
-} from "../api/Adminmanagementstudent";
-import ReusableTable from "../components/Table.component";
-import { initialState, loadingReducer } from '../store/loadingReducer';
+  InstructorHandleSubmit,
+  InstructorHandleUpdate,
+} from "../api/Adminmanagementinstructor";
+import { initialState, loadingReducer } from "../store/loadingReducer";
 
-const AdminManagementStudent = () => {
-  const [newStudent, setNewStudent] = useState({
+const AdminManagementInstructor = () => {
+  const [newInstructor, setNewInstructor] = useState({
     firstName: "",
     lastName: "",
     middleName: "",
-    yearLevel: "",
     picture: null,
     email: "",
     password: "",
     department: "",
   });
-  const [editStudent, setEditStudent] = useState({
+  const [editInstructor, setEditInstructor] = useState({
     id: "",
     firstName: "",
     lastName: "",
     middleName: "",
-    yearLevel: "",
     picture: null,
     email: "",
     department: "",
   });
-  const [students, setStudents] = useState([]);
+  const [instructors, setInstructors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [searchField, setSearchField] = useState("firstName");
-  const [filteredStudents, setFilteredStudents] = useState(students);
+  const [filteredInstructor, setFilteredInstructor] = useState(instructors);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeKey, setActiveKey] = useState("0"); // Add at top with other state
   const [loadingStates, dispatch] = useReducer(loadingReducer, initialState);
 
-  const handleNewStudentChange = (e) => {
+  const handleNewInstructorChange = (e) => {
     const { name, value, type, files } = e.target;
     console.log(name, value, type, files);
     if (type === "file") {
       handleFileUpload(files[0], e, "new");
     } else {
-      setNewStudent((prev) => ({ ...prev, [name]: value }));
+      setNewInstructor((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -77,96 +73,91 @@ const AdminManagementStudent = () => {
       }
 
       if (submissionType === "edit") {
-        setEditStudent((prev) => ({ ...prev, picture: file }));
+        setEditInstructor((prev) => ({ ...prev, picture: file }));
       }
       if (submissionType === "new") {
-        setNewStudent((prev) => ({ ...prev, picture: file }));
+        setNewInstructor((prev) => ({ ...prev, picture: file }));
       }
     }
   };
 
-  const handleEditStudentChange = (e) => {
+  const handleEditInstructorChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
       handleFileUpload(files[0], e, "edit");
     } else {
-      setEditStudent((prev) => ({ ...prev, [name]: value }));
+      setEditInstructor((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: 'SET_LOADING', payload: { id: 'submitStudent' } });
-    const result = await StudentHandleSubmit(e, newStudent);
-
-    if (result) {
-       dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitStudent' } });
-      setActiveKey(null); // Close accordion on success
+    dispatch({ type: "SET_LOADING", payload: { id: "submitInstructor" } });
+    try {
+        const result = await InstructorHandleSubmit(e, newInstructor);
+        if (!result) return;
+        setInstructors((prev) => [...prev, result]);
+        setNewInstructor({
+            firstName: "",
+            lastName: "",
+            middleName: "",
+            picture: "",
+            email: "",
+            password: "",
+            // department: "",
+        });
+    } catch (error) {
+        console.error("Error submitting instructor:", error);
+    } finally {
+        dispatch({ type: "UNSET_LOADING", payload: { id: "submitInstructor" } });
     }
-
-    dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitStudent' } });
-    setStudents((prev) => [...prev, result]);
-    setNewStudent({
-      firstName: "",
-      lastName: "",
-      middleName: "",
-      yearLevel: "",
-      picture: "",
-      email: "",
-      password: "",
-      // department: "",
-    });
-  };
+};
 
   const handleModalClose = () => {
     setShowModal(false);
   };
-const handleUpdate = async () => {
+
+
+const handleUpdate = async (instructorId) => {
+    dispatch({ type: "SET_LOADING", payload: { id: "editInstructor" } });
     try {
-        dispatch({ type: 'SET_LOADING', payload: { id: 'updateStudent' } });
-        console.log("Updating student:", editStudent);
-        const updatedStudent = await StudenHandleUpdate(
-            editStudent,
+        const updatedInstructor = await InstructorHandleUpdate(
+            editInstructor,
             handleModalClose
         );
 
-        setStudents(
-            students.map((student) => {
-                if (student.id === updatedStudent.id) {
+        setInstructors((prevInstructors) =>
+            prevInstructors.map((i) => {
+                if (i.id === updatedInstructor.id) {
+                    // Retain the last picture if updatedInstructor.picture is null
                     return {
-                        ...student,
-                        ...updatedStudent,
-                        image:
-                            updatedStudent.image !== null
-                                ? updatedStudent.image
-                                : student.image,
+                        ...i,
+                        picture: updatedInstructor.picture !== undefined ? updatedInstructor.picture : i.picture,
+                        // Include other properties from updatedInstructor as needed
+                        ...updatedInstructor,
                     };
                 }
-                return student;
+                return i;
             })
         );
     } catch (error) {
-        dispatch({ type: 'UNSET_LOADING', payload: { id: 'updateStudent' } });
-        console.error("Error updating student:", error);
+        console.error("Error updating instructor:", error);
     } finally {
-        dispatch({ type: 'UNSET_LOADING', payload: { id: 'updateStudent' } });
+        dispatch({ type: "UNSET_LOADING", payload: { id: "editInstructor" } });
     }
 };
 
-  const handleModalShow = (student) => {
-    const defaultYearLevel = YEARS[0];
+  const handleModalShow = (Instructor) => {
     const defaultDepartment = Object.keys(COURSE_OPTIONS)[0];
-    student.yearLevel = student.yearLevel ?? defaultYearLevel;
-    student.department = student.department ?? defaultDepartment;
-    setEditStudent({
-      id: student.id,
-      firstName: student.firstName,
-      lastName: student.lastName,
-      middleName: student.middleName,
-      yearLevel: student.yearLevel,
-      picture: student.picture,
-      email: student.email,
-      department: student.department,
+    Instructor.department = Instructor.department ?? defaultDepartment;
+    setEditInstructor({
+      id: Instructor.id,
+      firstName: Instructor.firstName,
+      lastName: Instructor.lastName,
+      middleName: Instructor.middleName,
+      picture: Instructor.picture,
+      email: Instructor.email,
+      department: Instructor.department,
     });
     setShowModal(true);
   };
@@ -176,17 +167,16 @@ const handleUpdate = async () => {
   }, 300);
 
   const fetchUser = async () => {
-    console.log("fetching students");
+    console.log("fetching Instructors");
 
-    const students = await fetchUsers();
-    setStudents(students);
+    const Instructors = await fetchUsers();
+    setInstructors(Instructors);
   };
 
   const tableHeaders = [
     { key: "firstName", value: "First Name" },
     { key: "lastName", value: "Last Name" },
     { key: "middleName", value: "Middle Name" },
-    { key: "yearLevel", value: "Year Level" },
     { key: "picture", value: "Picture" },
     { key: "email", value: "Email" },
     { key: "department", value: "Department" },
@@ -207,65 +197,55 @@ const handleUpdate = async () => {
   }, []);
 
   useEffect(() => {
-    setFilteredStudents(
-      students
-        .filter((student) => student !== undefined) // Filter out undefined values
-        .filter(
-          (student) =>
-            student[searchField] &&
-            student[searchField]
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase())
-        )
+    const validInstructors = instructors.filter(
+      (instructor) => instructor !== undefined
     );
-  }, [searchTerm, students]);
 
-  const uniqueOptions = Array.from(
-    new Set(
-      students.map((student) =>
-        student && student[searchField] ? student[searchField] : ""
+    setFilteredInstructor(
+      validInstructors.filter(
+        (i) =>
+          i[searchField] &&
+          i[searchField].toLowerCase().includes(searchTerm.toLowerCase())
       )
-    )
+    );
+  }, [searchTerm, instructors]);
+  const uniqueOptions = Array.from(
+    new Set(instructors.map((instructor) => instructor[searchField]))
   );
 
   return (
     <Container className="mt-3">
-      <Accordion
-        defaultActiveKey="1"
-        activeKey={activeKey}
-        onSelect={(k) => setActiveKey(k)}
-        style={{ width: "100%" }}
-      >
+      <Accordion defaultActiveKey="1" style={{ width: "100%" }}>
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Add New Student</Accordion.Header>
+          <Accordion.Header>Add New Instructor</Accordion.Header>
           <Accordion.Body>
             <CustomCard
               style={{ width: "100%" }}
-              header={<h3>Add New Student</h3>}
+              header={<h3>Add New Instructor</h3>}
             >
               <Form onSubmit={handleSubmit}>
                 <Row>
                   <Col lg={6}>
                     <CustomInput
-                      controlId="StudentFirstName"
+                      controlId="InstructorFirstName"
                       label="First Name"
                       type="text"
-                      placeholder="Student first name"
+                      placeholder="Instructor first name"
                       style={{ maxWidth: "400px" }}
-                      value={newStudent.firstName}
-                      onChange={handleNewStudentChange}
+                      value={newInstructor.firstName}
+                      onChange={handleNewInstructorChange}
                       name="firstName"
                     />
                   </Col>
                   <Col lg={6}>
                     <CustomInput
-                      controlId="StudentLastName"
+                      controlId="InstructorLastName"
                       label="Last Name"
                       type="text"
-                      placeholder="Student last name"
+                      placeholder="Instructor last name"
                       style={{ maxWidth: "400px" }}
-                      value={newStudent.lastName}
-                      onChange={handleNewStudentChange}
+                      value={newInstructor.lastName}
+                      onChange={handleNewInstructorChange}
                       name="lastName"
                     />
                   </Col>
@@ -273,52 +253,36 @@ const handleUpdate = async () => {
                 <Row>
                   <Col lg={6}>
                     <CustomInput
-                      controlId="StudentMiddleName"
+                      controlId="InstructorMiddleName"
                       label="Middle Name"
                       type="text"
-                      placeholder="Student middle name"
+                      placeholder="Instructor middle name"
                       style={{ maxWidth: "400px" }}
-                      value={newStudent.middleName}
-                      onChange={handleNewStudentChange}
+                      value={newInstructor.middleName}
+                      onChange={handleNewInstructorChange}
                       name="middleName"
                     />
-                  </Col>
-                  <Col lg={6}>
-                    <Form.Select
-                      value={newStudent.yearLevel}
-                      onChange={handleNewStudentChange}
-                      className="py-3 mb-3"
-                      aria-label="Year Level"
-                      style={{ maxWidth: "400px" }}
-                      name="yearLevel"
-                    >
-                      {YEARS.map((value) => (
-                        <option key={value} value={value}>
-                          {value}
-                        </option>
-                      ))}
-                    </Form.Select>
                   </Col>
                 </Row>
                 <Row>
                   <Col lg={6}>
                     <CustomInput
-                      controlId="StudentPicture"
-                      label="Student Picture"
+                      controlId="InstructorPicture"
+                      label="Instructor Picture"
                       type="file"
                       placeholder="Choose New Picture"
                       style={{ maxWidth: "400px" }}
-                      value={newStudent.picture}
-                      onChange={handleNewStudentChange}
+                      value={newInstructor.picture}
+                      onChange={handleNewInstructorChange}
                       name="picture"
                     />
                   </Col>
                   {/* <Col lg={6}>
                     <Form.Select
-                      value={newStudent.department}
-                      onChange={handleNewStudentChange}
+                      value={newInstructor.department}
+                      onChange={handleNewInstructorChange}
                       className="py-3 mb-3"
-                      aria-label="Student Department"
+                      aria-label="Instructor Department"
                       style={{ maxWidth: "400px" }}
                       name="department"
                     >
@@ -331,33 +295,33 @@ const handleUpdate = async () => {
                   </Col> */}
                 </Row>
                 <CustomInput
-                  controlId="studentEmail"
+                  controlId="InstructorEmail"
                   label="Email"
                   type="email"
-                  placeholder="Student email"
-                  value={newStudent.email}
+                  placeholder="Instructor email"
+                  value={newInstructor.email}
                   style={{ maxWidth: "400px" }}
-                  onChange={handleNewStudentChange}
+                  onChange={handleNewInstructorChange}
                   name={"email"}
                 />
                 <CustomInput
-                  controlId="studentPassword"
+                  controlId="InstructorPassword"
                   label="Password"
                   type="password"
-                  placeholder="Student password"
+                  placeholder="Instructor password"
                   style={{ maxWidth: "400px" }}
-                  value={newStudent.password}
-                  onChange={handleNewStudentChange}
+                  value={newInstructor.password}
+                  onChange={handleNewInstructorChange}
                   name={"password"}
                 />
                 <Button
-                  loading={loadingStates.submitStudent}
+                  loading={loadingStates.submitInstructor}
                   loadingPosition="end"
                   type="submit"
                   variant="contained"
                   sx={{ backgroundColor: "gray", color: "white" }}
                 >
-                  Add Student
+                  Add Instructor
                 </Button>
               </Form>
             </CustomCard>
@@ -368,10 +332,10 @@ const handleUpdate = async () => {
       <EditModal
         show={showModal}
         handleClose={handleModalClose}
-        header="Edit Student"
+        header="Edit Instructor"
         footer={
           <Button
-            loading={loadingStates.updateStudent}
+            loading={loadingStates.editInstructor}
             loadingPosition="end"
             type="submit"
             variant="contained"
@@ -386,25 +350,25 @@ const handleUpdate = async () => {
           <Row>
             <Col lg={6}>
               <CustomInput
-                controlId="EditStudentFirstName"
+                controlId="EditInstructorFirstName"
                 label="First Name"
                 type="text"
-                placeholder="Student first name"
+                placeholder="Instructor first name"
                 style={{ maxWidth: "400px" }}
-                value={editStudent.firstName}
-                onChange={handleEditStudentChange}
+                value={editInstructor.firstName}
+                onChange={handleEditInstructorChange}
                 name="firstName"
               />
             </Col>
             <Col lg={6}>
               <CustomInput
-                controlId="StudentLastName"
+                controlId="InstructorLastName"
                 label="Last Name"
                 type="text"
-                placeholder="Student last name"
+                placeholder="Instructor last name"
                 style={{ maxWidth: "400px" }}
-                value={editStudent.lastName}
-                onChange={handleEditStudentChange}
+                value={editInstructor.lastName}
+                onChange={handleEditInstructorChange}
                 name="lastName"
               />
             </Col>
@@ -412,50 +376,34 @@ const handleUpdate = async () => {
           <Row>
             <Col lg={6}>
               <CustomInput
-                controlId="StudentMiddleName"
+                controlId="InstructorMiddleName"
                 label="Middle Name"
                 type="text"
                 placeholder="Middle name"
                 style={{ maxWidth: "400px" }}
-                value={editStudent.middleName}
-                onChange={handleEditStudentChange}
+                value={editInstructor.middleName}
+                onChange={handleEditInstructorChange}
                 name="middleName"
               />
-            </Col>
-            <Col lg={6}>
-              <Form.Select
-                value={editStudent.yearLevel}
-                onChange={handleEditStudentChange}
-                className="py-3 mb-3"
-                aria-label="Year Level"
-                style={{ maxWidth: "400px" }}
-                name="yearLevel"
-              >
-                {YEARS.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Form.Select>
             </Col>
           </Row>
           <Row>
             <Col lg={6}>
               <CustomInput
-                controlId="StudentPicture"
+                controlId="InstructorPicture"
                 label="Change Picture"
                 type="file"
                 placeholder="Change Picture"
                 style={{ maxWidth: "400px" }}
-                value={editStudent.picture}
-                onChange={handleEditStudentChange}
+                value={editInstructor.picture}
+                onChange={handleEditInstructorChange}
                 name="picture"
               />
             </Col>
             {/* <Col lg={6}>
               <Form.Select
-                value={editStudent.department}
-                onChange={handleEditStudentChange}
+                value={editInstructor.department}
+                onChange={handleEditInstructorChange}
                 className="py-3 mb-3"
                 aria-label="Default select example"
                 style={{ maxWidth: "400px" }}
@@ -470,13 +418,13 @@ const handleUpdate = async () => {
             </Col> */}
           </Row>
           {/* <CustomInput
-            controlId="studentEmail"
+            controlId="InstructorEmail"
             label="Email"
             type="email"
-            placeholder="Student email"
-            value={editStudent.email}
+            placeholder="Instructor email"
+            value={editInstructor.email}
             style={{ maxWidth: "400px" }}
-            onChange={handleEditStudentChange}
+            onChange={handleEditInstructorChange}
             name={"email"}
           /> */}
         </Form>
@@ -496,7 +444,6 @@ const handleUpdate = async () => {
                 <MenuItem value="firstName">First Name</MenuItem>
                 <MenuItem value="lastName">Last Name</MenuItem>
                 <MenuItem value="middleName">Middle Name</MenuItem>
-                <MenuItem value="yearLevel">Year Level</MenuItem>
                 <MenuItem value="department">Department</MenuItem>
               </Select>
             </FormControl>
@@ -520,24 +467,84 @@ const handleUpdate = async () => {
 
         <ReusableTable
           headers={tableHeaders}
-          data={filteredStudents.map((student) => ({
-            id: student.id,
-            firstName: student.firstName,
-            lastName: student.lastName,
-            middleName: student.middleName,
-            yearLevel: student.yearLevel,
+          data={filteredInstructor.map((instructor) => ({
+            id: instructor.id,
+            firstName: instructor.firstName,
+            lastName: instructor.lastName,
+            middleName: instructor.middleName,
             picture: (
-              <img src={student.picture} width={50} height={50} alt="Student" />
+              <img
+                src={instructor.picture}
+                width={50}
+                height={50}
+                alt="Instructor"
+              />
             ),
-            email: student.email,
-            department: student.department,
+            email: instructor.email,
+            department: instructor.department,
           }))}
           actions={tableActions}
           excludeSortingHeaders={excludeSortingHeaders}
         />
+        {/* <Table responsive>
+            <thead>
+              <tr>
+                <th
+                  style={{ paddingLeft: "32px" }}
+                  onClick={() => handleSort("firstName")}
+                >
+                  First Name {renderSortIcon("firstName")}
+                </th>
+                <th onClick={() => handleSort("lastName")}>
+                  Last Name {renderSortIcon("lastName")}
+                </th>
+                <th onClick={() => handleSort("middleName")}>
+                  Middle Name {renderSortIcon("middleName")}
+                </th>
+                <th onClick={() => handleSort("yearLevel")}>
+                  Year Level {renderSortIcon("yearLevel")}
+                </th>
+                <th>Picture</th>
+                <th onClick={() => handleSort("email")}>
+                  Email {renderSortIcon("email")}
+                </th>
+                <th onClick={() => handleSort("department")}>
+                  Department {renderSortIcon("department")}
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedInstructors.map((Instructor) => (
+                <tr key={Instructor.id}>
+                  <td style={{ paddingLeft: "32px" }}>{Instructor.firstName}</td>
+                  <td>{Instructor.lastName}</td>
+                  <td>{Instructor.middleName}</td>
+                  <td>{Instructor.yearLevel}</td>
+                  <td>
+                    <img
+                      src={Instructor.picture}
+                      alt="Instructor"
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                  </td>
+                  <td>{Instructor.email}</td>
+                  <td>{Instructor.department}</td>
+                  <td>
+                    <Edit
+                      color="success"
+                      fontSize="large"
+                      className="cpoint mx-2"
+                      onClick={() => handleModalShow(Instructor)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table> */}
       </div>
     </Container>
   );
 };
 
-export default AdminManagementStudent;
+export default AdminManagementInstructor;
