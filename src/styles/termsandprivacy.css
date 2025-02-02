@@ -1,0 +1,36 @@
+.privacy-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: #FFFFFF;
+  min-height: 100vh;
+  background: #2A2F7A;
+}
+
+.signinlogo {
+  display: block;
+  margin: 2rem auto;
+}
+
+
+.bullet-point {
+  display: flex;
+  margin: 0.5rem 0;
+  gap: 0.5rem;
+}
+
+.bullet {
+  color: #1B898A;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .privacy-container {
+    padding: 1rem;
+  }
+  
+  .privacy-content {
+    padding: 1rem;
+  }
+}

@@ -40,23 +40,18 @@
 }
 
 .signincontainer {
-    
-    background: linear-gradient(to right, #1B898A, #2A2E7A); /* Example colors */
-    height: 100%;
+    background: linear-gradient(to right, #1B898A, #2A2E7A);
+    min-height: 100vh; /* Changed from height: auto to min-height: 100vh */
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%; /* Ensure full width */
 }
 
 .signininner {
     height: 80%;
 }
 
-@media (max-height: 100vh) {
-    .signincontainer {
-        height: 100vh;
-    }
-}
 
 .signinbannerimage{
     max-height: 600px;

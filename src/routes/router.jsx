@@ -12,10 +12,15 @@ import ChatbotManager from "../pages/ChabotManager";
 import SuperAdminProtect from "../guard/SuperAdminGuard";
 import AdminManagementAdmin from "../pages/Superadminmanagement.page";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import TermsAndPrivacy from "../pages/termsandprivacy";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <SigninPage />,
+  },
+  {
+    path: "/privacy",
+    element: <TermsAndPrivacy />,
   },
   { 
     path: "/forgot-password",
