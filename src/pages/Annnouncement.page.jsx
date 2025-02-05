@@ -256,7 +256,6 @@ const handleSubmitAnnouncement = async (e) => {
 
   const handleEditAnnouncementChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     if (name === "image") {
       const file = e.target.files[0];
       setEditAnnouncement((prevState) => ({
@@ -422,6 +421,14 @@ const handleSubmitAnnouncement = async (e) => {
   ];
 
   const excludeSortingHeaders = [{ key: "imageURL", value: "Image" }];
+
+  useEffect(() => {
+    setFilteredAnnouncements(
+      announcements.filter((announcement) =>
+        announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
+      ));
+      console.log("filteredAnnouncements", filteredAnnouncements);
+  }, [searchQuery]);
 
   return (
     <Container fluid className="p-4">
@@ -690,7 +697,7 @@ const handleSubmitAnnouncement = async (e) => {
               </Form.Group>
             </Col>
 
-            <Col lg={6}>
+            {/* <Col lg={6}>
               <Form.Select
                 onChange={handleEditAnnouncementChange}
                 className="py-3 mb-3"
@@ -704,9 +711,9 @@ const handleSubmitAnnouncement = async (e) => {
                   </option>
                 ))}
               </Form.Select>
-            </Col>
+            </Col> */}
 
-            <Col lg={6}>
+            <Col lg={12}>
               <CustomInput
                 controlId="AnnouncementEditImage"
                 label="Image2"
