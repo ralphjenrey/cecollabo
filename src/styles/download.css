@@ -1,0 +1,26 @@
+.download-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    color: #FFFFFF;
+    min-height: 100vh;
+    background: #2A2F7A;
+  }
+  
+  .signinlogo {
+    display: block;
+    margin: 2rem auto;
+  }
+
+.download-button {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .download-button:hover {
+    transform: scale(1.05);
+    background-color: #f8f9fa;
+  }
+  
