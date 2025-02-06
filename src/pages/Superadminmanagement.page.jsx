@@ -186,7 +186,7 @@ const AdminManagementAdmin = () => {
                                 name="picture"
                             />
                         </Col> */}
-                        <Col lg={6}>
+                        {/* <Col lg={6}>
                             <Form.Select
                                 value={editAdmin.department} // Updated state
                                 onChange={handleEditAdminChange} // Updated function
@@ -201,7 +201,7 @@ const AdminManagementAdmin = () => {
                                     </option>
                                 ))}
                             </Form.Select>
-                        </Col>
+                        </Col> */}
                     </Row>
                     <CustomInput
                         controlId="EditAdminEmail" // Updated controlId

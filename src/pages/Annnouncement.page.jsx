@@ -112,7 +112,7 @@ const AnnouncementPage = () => {
     fetchAnnouncements();
   }, []);
 
-const handleSubmitAnnouncement = async (e) => {
+  const handleSubmitAnnouncement = async (e) => {
     e.preventDefault();
 
     if (!validateAnnouncement(announcement)) {
@@ -128,9 +128,9 @@ const handleSubmitAnnouncement = async (e) => {
     }
 
     try {
-      dispatch({ type: 'SET_LOADING', payload: { id: 'submitAnnouncement' } });
+      dispatch({ type: "SET_LOADING", payload: { id: "submitAnnouncement" } });
       const roomRef = ref(database, `Rooms/${department}`);
-      
+
       update(roomRef, {
         id: department,
         role: "admin",
@@ -171,17 +171,22 @@ const handleSubmitAnnouncement = async (e) => {
         variant: "success",
         anchorOrigin: { vertical: "top", horizontal: "center" },
       });
-      dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitAnnouncement' } });
+      dispatch({
+        type: "UNSET_LOADING",
+        payload: { id: "submitAnnouncement" },
+      });
 
-
-      await sendMessages(department, announcementData.title, announcementData.text);
+      await sendMessages(
+        department,
+        announcementData.title,
+        announcementData.text
+      );
       console.log("Announcement added successfully");
       console.log("Announcement data: ", announcementData);
       setAnnouncements((prevState) => [
         ...prevState,
         { id: firebaseKey, ...announcementData },
       ]);
-      
     } catch (error) {
       // Notify user of error
       enqueueSnackbar("An error occurred. Please try again.", {
@@ -190,52 +195,55 @@ const handleSubmitAnnouncement = async (e) => {
       });
       console.error("Error adding announcement: ", error);
     } finally {
-      dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitAnnouncement' } });
+      dispatch({
+        type: "UNSET_LOADING",
+        payload: { id: "submitAnnouncement" },
+      });
     }
   };
 
-    const validateAnnouncement = (announcement) => {
-      if (!announcement) {
-          enqueueSnackbar("Announcement data is missing", {
-              variant: "error",
-              anchorOrigin: { vertical: "top", horizontal: "center" },
-          });
-          return false;
-      }
-  
-      if (!announcement.title || !announcement.text) {
-          enqueueSnackbar("Please fill in the title and description fields", {
-              variant: "error",
-              anchorOrigin: { vertical: "top", horizontal: "center" },
-          });
-          return false;
-      }
-  
-      if (!announcement.startDate && !announcement.endDate) {
-          enqueueSnackbar("Please fill in the start and end dates", {
-              variant: "error",
-              anchorOrigin: { vertical: "top", horizontal: "center" },
-          });
-          return false;
-      }
-  
-      if (announcement.startDate >= announcement.endDate) {
-          enqueueSnackbar("Start date must be before end date", {
-              variant: "error",
-              anchorOrigin: { vertical: "top", horizontal: "center" },
-          });
-          return false;
-      }
-  
-      if (announcement.date < new Date().toISOString()) {
-          enqueueSnackbar("Start date must be in the future", {
-              variant: "error",
-              anchorOrigin: { vertical: "top", horizontal: "center" },
-          });
-          return false;
-      }
-  
-      return true;
+  const validateAnnouncement = (announcement) => {
+    if (!announcement) {
+      enqueueSnackbar("Announcement data is missing", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+
+    if (!announcement.title || !announcement.text) {
+      enqueueSnackbar("Please fill in the title and description fields", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+
+    if (!announcement.startDate && !announcement.endDate) {
+      enqueueSnackbar("Please fill in the start and end dates", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+
+    if (announcement.startDate >= announcement.endDate) {
+      enqueueSnackbar("Start date must be before end date", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+
+    if (announcement.date < new Date().toISOString()) {
+      enqueueSnackbar("Start date must be in the future", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+
+    return true;
   };
 
   const handleAnnouncementChange = (e) => {
@@ -293,8 +301,11 @@ const handleSubmitAnnouncement = async (e) => {
         const departmentKey = Object.keys(COURSE_OPTIONS).find(
           (key) => COURSE_OPTIONS[key] === department
         );
-        console.log(`Rooms/${departmentKey}/${id}`)
-        const announcementRef = ref(database, `Rooms/${departmentKey}/messages/${id}`);
+        console.log(`Rooms/${departmentKey}/${id}`);
+        const announcementRef = ref(
+          database,
+          `Rooms/${departmentKey}/messages/${id}`
+        );
         await remove(announcementRef);
         setAnnouncements((prevState) =>
           prevState.filter((announcement) => announcement.id !== id)
@@ -314,14 +325,13 @@ const handleSubmitAnnouncement = async (e) => {
     }
   };
 
-    const handleEditAnnouncement = async (e) => {
-
-      if (!validateAnnouncement(editAnnouncement)) {
-        return;
-      }
+  const handleEditAnnouncement = async (e) => {
+    if (!validateAnnouncement(editAnnouncement)) {
+      return;
+    }
     try {
       e.preventDefault();
-      dispatch({ type: 'SET_LOADING', payload: { id: 'editAnnouncement' } });
+      dispatch({ type: "SET_LOADING", payload: { id: "editAnnouncement" } });
 
       const { id, image, ...announcementData } = editAnnouncement;
       const departmentKey = Object.keys(COURSE_OPTIONS).find(
@@ -338,7 +348,7 @@ const handleSubmitAnnouncement = async (e) => {
         database,
         `Rooms/${departmentKey}/messages/${id}`
       );
-  
+
       // Check if a new image is provided
       if (image) {
         const announcementStorageRef = storageRef(
@@ -348,10 +358,10 @@ const handleSubmitAnnouncement = async (e) => {
         const metadata = {
           contentType: "image/jpeg",
         };
-  
+
         // Upload the new image
         await uploadBytes(announcementStorageRef, image, metadata);
-  
+
         // Get the download URL of the uploaded image
         const downloadURL = await getDownloadURL(announcementStorageRef);
         announcementData.imageURL = downloadURL;
@@ -359,7 +369,7 @@ const handleSubmitAnnouncement = async (e) => {
         // remove the imageURL property if no new image is provided
         delete announcementData.imageURL;
       }
-  
+
       // Update the announcement in the database
       await update(announcementRef, announcementData);
       enqueueSnackbar("Announcement updated successfully", {
@@ -379,7 +389,7 @@ const handleSubmitAnnouncement = async (e) => {
       });
       console.error("Error updating announcement: ", error);
     } finally {
-      dispatch({ type: 'UNSET_LOADING', payload: { id: 'editAnnouncement' } });
+      dispatch({ type: "UNSET_LOADING", payload: { id: "editAnnouncement" } });
     }
   };
 
@@ -417,16 +427,18 @@ const handleSubmitAnnouncement = async (e) => {
     { key: "endDate", value: "End Date" },
     { key: "department", value: "Department" },
     { key: "imageURL", value: "Image" },
-    { key: "show", value: "" }
+    { key: "show", value: "" },
   ];
 
   const excludeSortingHeaders = [{ key: "imageURL", value: "Image" }];
 
   useEffect(() => {
-    setFilteredAnnouncements(
-      announcements.filter((announcement) =>
-        announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
-      ));
+  
+      setFilteredAnnouncements(
+        announcements.filter((announcement) =>
+          announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
       console.log("filteredAnnouncements", filteredAnnouncements);
   }, [searchQuery]);
 
@@ -501,7 +513,9 @@ const handleSubmitAnnouncement = async (e) => {
                   </Col>
 
                   <Form.Group as={Col} lg={4} className="mb-3">
-                    <Form.Label htmlFor="startDate" className="d-block">Start Date</Form.Label>
+                    <Form.Label htmlFor="startDate" className="d-block">
+                      Start Date
+                    </Form.Label>
                     <DatePicker
                       name="startDate"
                       onChange={(newValue) =>
@@ -516,7 +530,9 @@ const handleSubmitAnnouncement = async (e) => {
                   </Form.Group>
 
                   <Form.Group as={Col} lg={4} className="mb-3">
-                    <Form.Label htmlFor="endDate" className="d-block">End Date</Form.Label>
+                    <Form.Label htmlFor="endDate" className="d-block">
+                      End Date
+                    </Form.Label>
                     <DatePicker
                       name="endDate"
                       onChange={(newValue) =>
@@ -550,8 +566,8 @@ const handleSubmitAnnouncement = async (e) => {
                 </Row>
 
                 <Button
-                 loading={loadingStates.submitAnnouncement}
-                 loadingPosition="end"
+                  loading={loadingStates.submitAnnouncement}
+                  loadingPosition="end"
                   type="submit"
                   variant="contained"
                   color="success"
@@ -603,28 +619,28 @@ const handleSubmitAnnouncement = async (e) => {
             <div style={{ overflowX: "auto" }}>
               <ReusableTable
                 headers={tableHeaders}
-                data={(selectedAudience == "All"
-                  ? announcements
-                  : filteredAnnouncements
-                ).map((announcement) => ({
-                  id: announcement.id,
-                  title: announcement.title,
-                  text: announcement.text,
-                  startDate: new Date(
-                    announcement.startDate
-                  ).toLocaleDateString(),
-                  endDate: new Date(announcement.endDate).toLocaleDateString(),
-                  department: COURSE_OPTIONS[announcement.department],
-                  imageURL: (
-                    <img
-                      src={announcement.imageURL}
-                      width={50}
-                      height={50}
-                      alt="announcement"
-                    />
-                  ),
-                  show: announcement.show
-                }))}
+                data={announcements
+                  .filter(announcement => 
+                    announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                    (selectedAudience === "All" || announcement.department === selectedAudience)
+                  )
+                  .map((announcement) => ({
+                    id: announcement.id,
+                    title: announcement.title,
+                    text: announcement.text,
+                    startDate: new Date(announcement.startDate).toLocaleDateString(),
+                    endDate: new Date(announcement.endDate).toLocaleDateString(),
+                    department: COURSE_OPTIONS[announcement.department],
+                    imageURL: (
+                      <img
+                        src={announcement.imageURL}
+                        width={50}
+                        height={50}
+                        alt="announcement"
+                      />
+                    ),
+                    show: announcement.show,
+                  }))}
                 actions={tableActions}
                 excludeSortingHeaders={excludeSortingHeaders}
               />
@@ -666,24 +682,24 @@ const handleSubmitAnnouncement = async (e) => {
             </Col>
 
             <Form.Group as={Col} lg={2} className="mb-3 align-content-center">
-                    <Form.Check
-                      type="checkbox"
-                      id="show"
-                      label="Show"
-                      name="show"
-                      checked={editAnnouncement.show}
-                      onChange={(e) =>
-                        handleEditAnnouncementChange({
-                          target: {
-                            name: "show",
-                            value: e.target.checked,
-                          },
-                        })
-                      }
-                    />
-                  </Form.Group>
+              <Form.Check
+                type="checkbox"
+                id="show"
+                label="Show"
+                name="show"
+                checked={editAnnouncement.show}
+                onChange={(e) =>
+                  handleEditAnnouncementChange({
+                    target: {
+                      name: "show",
+                      value: e.target.checked,
+                    },
+                  })
+                }
+              />
+            </Form.Group>
 
-               <Col lg={12} className="mb-3">
+            <Col lg={12} className="mb-3">
               <Form.Group controlId="AnnouncementEditText">
                 <Form.Label>Your Message</Form.Label>
                 <Form.Control
@@ -760,8 +776,6 @@ const handleSubmitAnnouncement = async (e) => {
                 />
               </Form.Group>
             </Col>
-
-
           </Row>
         </Form>
       </EditModal>

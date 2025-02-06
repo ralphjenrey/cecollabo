@@ -4,13 +4,29 @@ import { enqueueSnackbar } from 'notistack';
 import { getFirebaseErrorMessage } from '../utils/firebase.exceptions';
 import { database, storage } from '../services/firebase';
 
-export const AdminHandleUpdate = async (editAdmin, handleModalClose) => { // Changed function name
+
+const updateEmail = async (userId, newEmail) => {
+  const response = await fetch('http://195.26.255.19:3014/change-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, newEmail })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update email');
+  }
+  return response.json();
+};
+
+export const AdminHandleUpdate = async (editAdmin, handleModalClose) => {
   try {
     if (editAdmin) {
       // Replace undefined properties with empty strings
       Object.keys(editAdmin).forEach((key) => {
         if (!editAdmin[key]) {
-            editAdmin[key] = "";
+          editAdmin[key] = "";
         }
       });
 
@@ -29,12 +45,24 @@ export const AdminHandleUpdate = async (editAdmin, handleModalClose) => { // Cha
         delete editAdmin.picture;
       }
 
-      const updatedAdmin = { // Changed variable name
+      // If email changed, update through API first
+      const existingUserRef = ref(database, `Users/${editAdmin.id}`);
+      const snapshot = await get(existingUserRef);
+      const existingUser = snapshot.val();
+
+      if (existingUser && existingUser.email !== editAdmin.email) {
+        await updateEmail(editAdmin.id, editAdmin.email);
+      }
+
+      const updatedAdmin = {
+        // Changed variable name
         ...editAdmin,
         updatedAt: new Date().toISOString(),
       };
+      
       await update(ref(database, `Users/${editAdmin.id}`), updatedAdmin);
-      enqueueSnackbar("Admin account updated successfully", { // Changed message
+      enqueueSnackbar("Admin account updated successfully", {
+        // Changed message
         variant: "success",
         anchorOrigin: { vertical: "top", horizontal: "center" },
       });

@@ -5,6 +5,7 @@ import PropTypes from "prop-types"; // Import PropTypes
 import { auth } from "../services/firebase";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
+import { updateEmail } from "firebase/auth";
 
 const NavBar = ({ toggleSidebar, isSuperAdmin = false }) => {
   NavBar.propTypes = {
@@ -23,8 +24,11 @@ const NavBar = ({ toggleSidebar, isSuperAdmin = false }) => {
   };
 
   const user = auth.currentUser;
-  const email = user ? user.email : "";
-
+  const email = window.location.pathname.includes("superadmin") 
+  ? "" 
+  : user 
+    ? user.email 
+    : "";
   return (
     <Navbar className="navbar">
       <Container className="navbarcontainer">
