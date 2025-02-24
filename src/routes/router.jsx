@@ -12,7 +12,7 @@ import ChatbotManager from "../pages/ChabotManager";
 import SuperAdminProtect from "../guard/SuperAdminGuard";
 import AdminManagementAdmin from "../pages/Superadminmanagement.page";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
-import TermsAndPrivacy from "../pages/termsandprivacy";
+import TermsAndPrivacy from "../pages/Termsandprivacy";
 import Download from "../pages/Download";
 const router = createBrowserRouter([
   {
