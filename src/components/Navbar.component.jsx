@@ -2,10 +2,9 @@ import { Container, Image, Navbar } from "react-bootstrap";
 import "../styles/navbar.css";
 import { FaBars } from "react-icons/fa";
 import PropTypes from "prop-types"; // Import PropTypes
-import { auth } from "../services/firebase";
+import { auth, superAdminAuth } from "../services/firebase";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
-import { updateEmail } from "firebase/auth";
 
 const NavBar = ({ toggleSidebar, isSuperAdmin = false }) => {
   NavBar.propTypes = {
@@ -15,6 +14,7 @@ const NavBar = ({ toggleSidebar, isSuperAdmin = false }) => {
   const dispatch = useDispatch();
   const handleLogout = () => {
     if (isSuperAdmin){
+      superAdminAuth.signOut();
       dispatch(logout());
     }
     else {

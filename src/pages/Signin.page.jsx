@@ -18,19 +18,22 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useSelector } from "react-redux";
 import { equalTo, get, orderByChild, query, ref } from "firebase/database";
 import ForgotPasswordPage from "./ForgotPasswordPage";
+import { useNavigate } from "react-router-dom";
 
 const SigninPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const navigate = useNavigate();
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      // Redirect to the dashboard
-      window.location.href = "/dashboard";
+    if (isAuthenticated && role === "admin") {
+      navigate("/dashboard");
+    }
+    else if (isAuthenticated && role === "superadmin") {
+      navigate("/superadmin/dashboard");
     }
   }, [isAuthenticated]);
 

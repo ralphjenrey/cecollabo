@@ -12,21 +12,56 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { auth, database } from "../services/firebase";
 import { get, ref } from "firebase/database";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const navItems = [
-  { eventKey: "link-1", href: "/dashboard", icon: FaTachometerAlt, label: "Dashboard" },
-  { eventKey: "link-2", href: "/announcements", icon: FaBullhorn, label: "Announcements" },
-  { eventKey: "link-3", href: "/instructors", icon: FaChalkboardTeacher, label: "Instructors" },
-  { eventKey: "link-4", href: "/students", icon: FaUserGraduate, label: "Students"},
+  {
+    eventKey: "link-1",
+    href: "/dashboard",
+    icon: FaTachometerAlt,
+    label: "Dashboard",
+  },
+  {
+    eventKey: "link-2",
+    href: "/announcements",
+    icon: FaBullhorn,
+    label: "Announcements",
+  },
+  {
+    eventKey: "link-3",
+    href: "/instructors",
+    icon: FaChalkboardTeacher,
+    label: "Instructors",
+  },
+  {
+    eventKey: "link-4",
+    href: "/students",
+    icon: FaUserGraduate,
+    label: "Students",
+  },
   { eventKey: "link-5", href: "/chatbot", icon: FaRobot, label: "Chatbot" },
   // { eventKey: "link-6", href: "/settings", icon: FaCog, label: "Settings" },
 ];
 
 const superAdminNavItems = [
-  { eventKey: "link-1", href: "/superadmin/dashboard", icon: FaTachometerAlt, label: "Dashboard" },
-  { eventKey: "link-2", href: "/superadmin/add-admin", icon: FaUserGraduate, label: "Add Admin" },
-  { eventKey: "link-3", href: "/superadmin/manage-admin", icon: FaPeopleGroup, label: "Manage Admin" },
-
+  {
+    eventKey: "link-1",
+    href: "/superadmin/dashboard",
+    icon: FaTachometerAlt,
+    label: "Dashboard",
+  },
+  {
+    eventKey: "link-2",
+    href: "/superadmin/add-admin",
+    icon: FaUserGraduate,
+    label: "Add Admin",
+  },
+  {
+    eventKey: "link-3",
+    href: "/superadmin/manage-admin",
+    icon: FaPeopleGroup,
+    label: "Manage Admin",
+  },
 ];
 
 const fetchUser = async () => {
@@ -40,32 +75,34 @@ const fetchUser = async () => {
   }
   const userRef = ref(database, `Users/${uid}`);
   return await get(userRef);
-  };
-
-
+};
 
 const Sidebar = ({ isSidebarOpen, isSuperAdmin = false, toggleSidebar }) => {
   const itemsToRender = isSuperAdmin ? superAdminNavItems : navItems;
+  const navigate = useNavigate();
+
   let user = fetchUser();
-  if (typeof user === "string")  {
+  if (typeof user === "string") {
     user = JSON.parse(user);
   }
 
   useEffect(() => {
-   
     const handleClickOutside = (event) => {
-      if (event.target.closest('.toggleicon')) {
+      if (event.target.closest(".toggleicon")) {
         return;
       }
-      const isSidebarElement = event.target.closest('.sidebar, .sidebar-toggle', '.toggleicon');
+      const isSidebarElement = event.target.closest(
+        ".sidebar, .sidebar-toggle",
+        ".toggleicon"
+      );
       if (!isSidebarElement && isSidebarOpen) {
         console.log("Clicked outside");
         toggleSidebar();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSidebarOpen, toggleSidebar]);
 
   return (
@@ -83,7 +120,11 @@ const Sidebar = ({ isSidebarOpen, isSuperAdmin = false, toggleSidebar }) => {
       <Nav className="sidebarnav" variant="pills" defaultActiveKey="/dashboard">
         {itemsToRender.map((item) => (
           <Nav.Item key={item.eventKey}>
-            <Nav.Link className="sidebarnavlink" eventKey={item.eventKey} href={item.href}>
+            <Nav.Link
+              className="sidebarnavlink"
+              eventKey={item.eventKey}
+              onClick={() => navigate(item.href)}
+            >
               <item.icon className="navicon" /> {item.label}
             </Nav.Link>
           </Nav.Item>

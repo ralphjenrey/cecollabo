@@ -6,7 +6,7 @@ import { database, storage } from '../services/firebase';
 
 
 const updateEmail = async (userId, newEmail) => {
-  const response = await fetch('http://195.26.255.19:3014/change-email', {
+  const response = await fetch('https://fcm-cecollabo.onrender.com/change-email', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

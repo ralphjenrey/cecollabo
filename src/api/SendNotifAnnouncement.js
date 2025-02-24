@@ -1,6 +1,6 @@
 
 export const sendMessages = async (roomName, title, body) => {
-  const response = await fetch('http://195.26.255.19:3014/send-notification', {
+  const response = await fetch('https://fcm-cecollabo.onrender.com/send-notification', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
