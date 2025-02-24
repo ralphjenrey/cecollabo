@@ -1,5 +1,5 @@
 import { Container, Button } from 'react-bootstrap';
-import '../styles/Download.css';
+import '../styles/download.css';
 
 const Download = () => {
   return (
