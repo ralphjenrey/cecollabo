@@ -76,9 +76,11 @@ const ReusableTable = ({ headers, data, actions, excludeSortingHeaders }) => {
             {Object.entries(row).map(([key, cell], cellIndex) => {
               // Check if the header key is "text" and truncate if necessary
               const isTextHeader = headers.find(header => header.key === key);
-              const displayCell = isTextHeader && key === "text" 
-                ? (cell.length > 100 ? `${cell.substring(0, 100)}...` : cell) 
-                : cell;
+              const displayCell = (key === "show")
+                ? (cell ? "Active" : "Disabled")
+                : (isTextHeader && key === "text")
+                  ? (cell.length > 100 ? `${cell.substring(0, 100)}...` : cell)
+                  : cell;
 
               return key !== "id" && <td key={cellIndex}>{displayCell}</td>;
             })}

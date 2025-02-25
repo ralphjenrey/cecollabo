@@ -23,7 +23,7 @@ import {
   StudentHandleSubmit,
 } from "../api/Adminmanagementstudent";
 import ReusableTable from "../components/Table.component";
-import { initialState, loadingReducer } from '../store/loadingReducer';
+import { initialState, loadingReducer } from "../store/loadingReducer";
 
 const AdminManagementStudent = () => {
   const [newStudent, setNewStudent] = useState({
@@ -35,6 +35,7 @@ const AdminManagementStudent = () => {
     email: "",
     password: "",
     department: "",
+    show: true,
   });
   const [editStudent, setEditStudent] = useState({
     id: "",
@@ -45,6 +46,7 @@ const AdminManagementStudent = () => {
     picture: null,
     email: "",
     department: "",
+    show: true,
   });
   const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -96,15 +98,15 @@ const AdminManagementStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: 'SET_LOADING', payload: { id: 'submitStudent' } });
+    dispatch({ type: "SET_LOADING", payload: { id: "submitStudent" } });
     const result = await StudentHandleSubmit(e, newStudent);
 
     if (result) {
-       dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitStudent' } });
+      dispatch({ type: "UNSET_LOADING", payload: { id: "submitStudent" } });
       setActiveKey(null); // Close accordion on success
     }
 
-    dispatch({ type: 'UNSET_LOADING', payload: { id: 'submitStudent' } });
+    dispatch({ type: "UNSET_LOADING", payload: { id: "submitStudent" } });
     setStudents((prev) => [...prev, result]);
     setNewStudent({
       firstName: "",
@@ -114,6 +116,7 @@ const AdminManagementStudent = () => {
       picture: "",
       email: "",
       password: "",
+
       // department: "",
     });
   };
@@ -121,37 +124,37 @@ const AdminManagementStudent = () => {
   const handleModalClose = () => {
     setShowModal(false);
   };
-const handleUpdate = async () => {
+  const handleUpdate = async () => {
     try {
-        dispatch({ type: 'SET_LOADING', payload: { id: 'updateStudent' } });
-        console.log("Updating student:", editStudent);
-        const updatedStudent = await StudenHandleUpdate(
-            editStudent,
-            handleModalClose
-        );
+      dispatch({ type: "SET_LOADING", payload: { id: "updateStudent" } });
+      console.log("Updating student:", editStudent);
+      const updatedStudent = await StudenHandleUpdate(
+        editStudent,
+        handleModalClose
+      );
 
-        setStudents(
-            students.map((student) => {
-                if (student.id === updatedStudent.id) {
-                    return {
-                        ...student,
-                        ...updatedStudent,
-                        image:
-                            updatedStudent.image !== null
-                                ? updatedStudent.image
-                                : student.image,
-                    };
-                }
-                return student;
-            })
-        );
+      setStudents(
+        students.map((student) => {
+          if (student.id === updatedStudent.id) {
+            return {
+              ...student,
+              ...updatedStudent,
+              image:
+                updatedStudent.image !== null
+                  ? updatedStudent.image
+                  : student.image,
+            };
+          }
+          return student;
+        })
+      );
     } catch (error) {
-        dispatch({ type: 'UNSET_LOADING', payload: { id: 'updateStudent' } });
-        console.error("Error updating student:", error);
+      dispatch({ type: "UNSET_LOADING", payload: { id: "updateStudent" } });
+      console.error("Error updating student:", error);
     } finally {
-        dispatch({ type: 'UNSET_LOADING', payload: { id: 'updateStudent' } });
+      dispatch({ type: "UNSET_LOADING", payload: { id: "updateStudent" } });
     }
-};
+  };
 
   const handleModalShow = (student) => {
     const defaultYearLevel = YEARS[0];
@@ -167,6 +170,7 @@ const handleUpdate = async () => {
       picture: student.picture,
       email: student.email,
       department: student.department,
+      show: student.show,
     });
     setShowModal(true);
   };
@@ -190,6 +194,7 @@ const handleUpdate = async () => {
     { key: "picture", value: "Picture" },
     { key: "email", value: "Email" },
     { key: "department", value: "Department" },
+    { key: "show", value: "Status" },
   ];
 
   const excludeSortingHeaders = [{ key: "picture", value: "Picture" }];
@@ -313,6 +318,7 @@ const handleUpdate = async () => {
                       name="picture"
                     />
                   </Col>
+
                   {/* <Col lg={6}>
                     <Form.Select
                       value={newStudent.department}
@@ -452,6 +458,24 @@ const handleUpdate = async () => {
                 name="picture"
               />
             </Col>
+            <Form.Group as={Col} lg={6} className="mb-3 align-content-center">
+              <Form.Check
+                controlId="show"
+                type="checkbox"
+                id="show"
+                label="Show"
+                name="show"
+                checked={editStudent.show}
+                onChange={(e) =>
+                  handleEditStudentChange({
+                    target: {
+                      name: "show",
+                      value: e.target.checked,
+                    },
+                  })
+                }
+              />
+            </Form.Group>
             {/* <Col lg={6}>
               <Form.Select
                 value={editStudent.department}
@@ -527,10 +551,20 @@ const handleUpdate = async () => {
             middleName: student.middleName,
             yearLevel: student.yearLevel,
             picture: (
-              <img src={student.picture} width={50} height={50} alt="Student" />
+              <img
+                onError={(e) =>
+                  (e.target.src =
+                    import.meta.env.VITE_PLACEHOLDER_IMAGE)
+                }
+                src={student.picture ?? import.meta.env.VITE_PLACEHOLDER_IMAGE}
+                width={50}
+                height={50}
+                alt="Student"
+              />
             ),
             email: student.email,
             department: student.department,
+            show: student.show,
           }))}
           actions={tableActions}
           excludeSortingHeaders={excludeSortingHeaders}

@@ -33,6 +33,7 @@ const AdminManagementInstructor = () => {
     email: "",
     password: "",
     department: "",
+    show: true,
   });
   const [editInstructor, setEditInstructor] = useState({
     id: "",
@@ -42,6 +43,7 @@ const AdminManagementInstructor = () => {
     picture: null,
     email: "",
     department: "",
+    show: true,
   });
   const [instructors, setInstructors] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -88,38 +90,11 @@ const AdminManagementInstructor = () => {
       setEditInstructor((prev) => ({ ...prev, [name]: value }));
     }
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch({ type: "SET_LOADING", payload: { id: "submitInstructor" } });
-    try {
-        const result = await InstructorHandleSubmit(e, newInstructor);
-        if (!result) return;
-        setInstructors((prev) => [...prev, result]);
-        setNewInstructor({
-            firstName: "",
-            lastName: "",
-            middleName: "",
-            picture: "",
-            email: "",
-            password: "",
-            // department: "",
-        });
-    } catch (error) {
-        console.error("Error submitting instructor:", error);
-    } finally {
-        dispatch({ type: "UNSET_LOADING", payload: { id: "submitInstructor" } });
-    }
-};
-
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-
+  
 const handleUpdate = async (instructorId) => {
     dispatch({ type: "SET_LOADING", payload: { id: "editInstructor" } });
     try {
+      //overide show value to boolean
         const updatedInstructor = await InstructorHandleUpdate(
             editInstructor,
             handleModalClose
@@ -146,6 +121,35 @@ const handleUpdate = async (instructorId) => {
     }
 };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch({ type: "SET_LOADING", payload: { id: "submitInstructor" } });
+    try {
+      console.log(editInstructor);
+        const result = await InstructorHandleSubmit(e, newInstructor);
+        if (!result) return;
+        setInstructors((prev) => [...prev, result]);
+        setNewInstructor({
+            firstName: "",
+            lastName: "",
+            middleName: "",
+            picture: "",
+            email: "",
+            password: "",
+            // department: "",
+        });
+    } catch (error) {
+        console.error("Error submitting instructor:", error);
+    } finally {
+        dispatch({ type: "UNSET_LOADING", payload: { id: "submitInstructor" } });
+    }
+};
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+
   const handleModalShow = (Instructor) => {
     const defaultDepartment = Object.keys(COURSE_OPTIONS)[0];
     Instructor.department = Instructor.department ?? defaultDepartment;
@@ -157,6 +161,7 @@ const handleUpdate = async (instructorId) => {
       picture: Instructor.picture,
       email: Instructor.email,
       department: Instructor.department,
+      show: Instructor.show,
     });
     setShowModal(true);
   };
@@ -179,6 +184,7 @@ const handleUpdate = async (instructorId) => {
     { key: "picture", value: "Picture" },
     { key: "email", value: "Email" },
     { key: "department", value: "Department" },
+    { key: "show", value: "Status" },
   ];
 
   const excludeSortingHeaders = [{ key: "picture", value: "Picture" }];
@@ -385,6 +391,25 @@ const handleUpdate = async (instructorId) => {
                 name="middleName"
               />
             </Col>
+            
+            <Form.Group as={Col} lg={6} className="mb-3 align-content-center">
+              <Form.Check
+                controlId="show"
+                type="checkbox"
+                id="show"
+                label="Show"
+                name="show"
+                checked={editInstructor.show}
+                onChange={(e) =>
+                  handleEditInstructorChange({
+                    target: {
+                      name: "show",
+                      value: e.target.checked,
+                    },
+                  })
+                }
+              />
+            </Form.Group>
           </Row>
           <Row>
             <Col lg={6}>
@@ -473,14 +498,19 @@ const handleUpdate = async (instructorId) => {
             middleName: instructor.middleName,
             picture: (
               <img
-                src={instructor.picture}
-                width={50}
-                height={50}
+              onError={(e) =>
+                (e.target.src =
+                  import.meta.env.VITE_PLACEHOLDER_IMAGE)
+              }
+              src={instructor.picture ?? import.meta.env.VITE_PLACEHOLDER_IMAGE}
+              width={50}
+              height={50}
                 alt="Instructor"
               />
             ),
             email: instructor.email,
             department: instructor.department,
+            show: instructor.show,
           }))}
           actions={tableActions}
           excludeSortingHeaders={excludeSortingHeaders}

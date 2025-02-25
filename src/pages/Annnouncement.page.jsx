@@ -115,6 +115,8 @@ const AnnouncementPage = () => {
   const handleSubmitAnnouncement = async (e) => {
     e.preventDefault();
 
+
+
     if (!validateAnnouncement(announcement)) {
       return;
     }
@@ -203,6 +205,7 @@ const AnnouncementPage = () => {
   };
 
   const validateAnnouncement = (announcement) => {
+    console.log("Announcement data: ", announcement);
     if (!announcement) {
       enqueueSnackbar("Announcement data is missing", {
         variant: "error",
@@ -235,13 +238,23 @@ const AnnouncementPage = () => {
       return false;
     }
 
-    if (announcement.date < new Date().toISOString()) {
+
+    if (announcement.startDate < new Date().toLocaleDateString()) {
       enqueueSnackbar("Start date must be in the future", {
         variant: "error",
         anchorOrigin: { vertical: "top", horizontal: "center" },
       });
       return false;
     }
+
+    if (announcement.startDate >= announcement.endDate) {
+      enqueueSnackbar("End date must be after start date", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+      return false;
+    }
+  
 
     return true;
   };
@@ -326,6 +339,10 @@ const AnnouncementPage = () => {
   };
 
   const handleEditAnnouncement = async (e) => {
+        //Convert date to ISO string
+        editAnnouncement.startDate = new Date(editAnnouncement.startDate).toLocaleDateString();
+        editAnnouncement.endDate = new Date(editAnnouncement.endDate).toLocaleDateString();
+
     if (!validateAnnouncement(editAnnouncement)) {
       return;
     }
@@ -427,7 +444,7 @@ const AnnouncementPage = () => {
     { key: "endDate", value: "End Date" },
     { key: "department", value: "Department" },
     { key: "imageURL", value: "Image" },
-    { key: "show", value: "" },
+    { key: "show", value: "Status" },
   ];
 
   const excludeSortingHeaders = [{ key: "imageURL", value: "Image" }];

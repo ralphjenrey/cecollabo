@@ -2,7 +2,6 @@ import { ref, set, update, get } from 'firebase/database';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { enqueueSnackbar } from 'notistack';
-import { COURSE_OPTIONS } from '../constants/course';
 import { getFirebaseErrorMessage } from '../utils/firebase.exceptions';
 import { auth, database, storage, superAdminAuth } from '../services/firebase';
 
@@ -88,6 +87,9 @@ export const InstructorHandleUpdate = async (editInstructor, handleModalClose) =
       Object.keys(editInstructor).forEach((key) => {
         if (!editInstructor[key]) {
             editInstructor[key] = "";
+        }
+        if (key === "show") {
+          editInstructor.show = editInstructor.show === "" ? false : true;
         }
       });
 

@@ -105,6 +105,9 @@ export const StudenHandleUpdate = async (editStudent, handleModalClose) => {
         if (!editStudent[key]) {
           editStudent[key] = "";
         }
+        if (key === "show") {
+          editStudent.show = editStudent.show === "" ? false : true;
+        }
       });
 
       if (editStudent.picture && editStudent.picture instanceof File) {

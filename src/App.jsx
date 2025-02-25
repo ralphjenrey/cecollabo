@@ -14,7 +14,10 @@ import { ref, get } from "firebase/database";
 function App() {
   const [isLoading, setLoading] = useState(true);
   const dispatch = useDispatch();
-
+  if (import.meta.env.VITE_ENV === 'production') {
+    console.log = function () {};
+  }
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
