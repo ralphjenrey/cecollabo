@@ -52,7 +52,6 @@ const AdminManagementInstructor = () => {
 
   const handleNewInstructorChange = (e) => {
     const { name, value, type, files } = e.target;
-    console.log(name, value, type, files);
     if (type === "file") {
       handleFileUpload(files[0], e, "new");
     } else {
