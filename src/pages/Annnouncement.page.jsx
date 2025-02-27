@@ -115,7 +115,8 @@ const AnnouncementPage = () => {
   const handleSubmitAnnouncement = async (e) => {
     e.preventDefault();
 
-
+    announcement.startDate = new Date(announcement.startDate).toLocaleDateString();
+    announcement.endDate = new Date(announcement.endDate).toLocaleDateString();
 
     if (!validateAnnouncement(announcement)) {
       return;
