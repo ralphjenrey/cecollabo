@@ -18,7 +18,7 @@ const Download = () => {
             variant="light" 
             size="lg"
             className="download-button"
-            href="https://firebasestorage.googleapis.com/v0/b/cecollabo-b85cd.appspot.com/o/Cecollabo.apk?alt=media&token=cce9254e-9ce2-4c36-b12a-d4a3e13892b0"
+            href="https://firebasestorage.googleapis.com/v0/b/cecollabo-b85cd.appspot.com/o/Cecollabo.apk?alt=media&token=9189ba64-3b58-4545-a829-14021c587e12"
             download
           >
             <i className="fas fa-download me-2"></i>
