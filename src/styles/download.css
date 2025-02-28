@@ -13,10 +13,24 @@
     margin: 2rem auto;
   }
 
+  .download-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Media query for large screens */
+@media (min-width: 768px) {
+  .download-section {
+      flex-direction: row;
+  }
+}
+
 .download-button {
     padding: 1rem 2rem;
     font-size: 0.9rem;
-    margin-right: 10px;
     transition: transform 0.2s ease;
   }
   

@@ -39,10 +39,11 @@ const Download = () => {
             }
           />
 
-          <div className="mt-3 text-light">
+       
+        </div>
+        <div className="mt-3 text-light">
             <small>Version 0.1.0</small>
           </div>
-        </div>
       </Container>
     </div>
   );
