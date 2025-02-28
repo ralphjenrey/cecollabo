@@ -29,7 +29,7 @@ const Download = () => {
             <i className="fas fa-download me-2"></i>
             Download Apk Now
           </Button>
-          {/* <img
+          <img
             src={googlePlayLogo}
             alt="Google Play"
             className="playstore"
@@ -37,7 +37,7 @@ const Download = () => {
               (window.location.href =
                 "https://play.google.com/store/apps/details?id=com.kushirawa.cecollabo")
             }
-          /> */}
+          />
 
           <div className="mt-3 text-light">
             <small>Version 0.1.0</small>
