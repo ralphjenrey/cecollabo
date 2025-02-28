@@ -15,7 +15,8 @@
 
 .download-button {
     padding: 1rem 2rem;
-    font-size: 1.25rem;
+    font-size: 0.9rem;
+    margin-right: 10px;
     transition: transform 0.2s ease;
   }
   
@@ -23,4 +24,11 @@
     transform: scale(1.05);
     background-color: #f8f9fa;
   }
+
+  .playstore {
+    cursor: pointer;
+  }
   
+  .playstore:hover {
+    transform: scale(1.05);
+  }
